@@ -1,6 +1,5 @@
 #include "linear.hpp"
 
-
 int main(){
 
 //по признакам сгенерируем значения таргетов с некоторым шумом
@@ -34,6 +33,10 @@ int main(){
     Eigen::VectorXd Y_test = list.front();
     list.pop_front();
 
+    std::cout << X_train << std::endl;
+
+
+    myPlot(X_train, Y_train, X_test, Y_test, X1);
     
 
 // // Пример данных

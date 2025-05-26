@@ -6,6 +6,8 @@
 #include <ctime>
 
 #include <Eigen/Dense>
+#include <sciplot/sciplot.hpp>
+
 
 class LinearRegression{
 public:
@@ -137,4 +139,57 @@ trainTestSplit(const Eigen::VectorXd& X, const Eigen::VectorXd& Y, double train_
     }
 
     return std::list<Eigen::VectorXd> {X_train, X_test, Y_train, Y_test};
+}
+
+
+void myPlot(const Eigen::VectorXd& X_train,const Eigen::VectorXd& Y_train, 
+            const Eigen::VectorXd& X_test,const Eigen::VectorXd& Y_test,
+            const Eigen::VectorXd& X_real)
+{
+    sciplot::Plot2D plot;
+
+    plot.xlabel("x");
+    plot.ylabel("y");
+
+    plot.xrange(-6.0, 6.0);
+    plot.yrange(-50.0, 50.0);
+
+    plot.legend()
+        .atOutsideBottom()
+        .displayHorizontal()
+        .displayExpandWidthBy(2);
+
+
+    plot.drawPoints(X_train, Y_train).lineWidth(9)
+                                          .pointType(0) 
+                                          .lineColor("blue")
+                                          .label("train");
+
+
+    plot.drawPoints(X_test,  Y_test).lineWidth(9)
+                                         .pointType(0)
+                                         .lineColor("yellow")
+                                         .label("test");
+
+
+    Eigen::VectorXd Y1(X_real.size());
+    const double* data = X_real.data();
+
+    for (int i = 0; i < X_real.size(); ++i)
+    {
+        Y1(i) = linearExpression(data[i]);
+    }
+
+
+    plot.drawCurve(X_real, Y1).lineWidth(3)
+                                   .label("real")
+                                   .lineColor("red");
+
+
+    sciplot::Figure fig = {{plot}};
+    sciplot::Canvas canvas = {{fig}};
+
+    canvas.size(800, 600);
+
+    canvas.show();
 }
