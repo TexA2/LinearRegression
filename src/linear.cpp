@@ -17,8 +17,6 @@ int main(){
     }
 
 
- //выделим половину объектов на тест 
-
     std::list<Eigen::VectorXd> list = trainTestSplit(X1, Y1, 0.5);
 
     Eigen::VectorXd X_train = list.front();
@@ -33,20 +31,15 @@ int main(){
     Eigen::VectorXd Y_test = list.front();
     list.pop_front();
 
-    std::cout << X_train << std::endl;
-
-
-    myPlot(X_train, Y_train, X_test, Y_test, X1);
     
+// Обучение модели
+     LinearRegression model;
+     model.fit(X_train, Y_train);
+     Eigen::VectorXd y_pred =  model.predict(X_test);
+    Eigen::VectorXd y_pred2 =  model.predict(X1);
 
-// // Пример данных
-//     Eigen::MatrixXd X = Eigen::Map<Eigen::MatrixXd>(X1.data(), 10, 5).eval();;
-  
-//     Eigen::VectorXd y1 = Y1.head(10);
 
-//     // Обучение модели
-//     LinearRegression model;
-//     model.fit(X, y1);
+     myPlot(X_train, Y_train, X_test, y_pred, X1, y_pred2);
 
 
     return  0;

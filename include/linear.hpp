@@ -14,10 +14,10 @@ public:
     LinearRegression(){};
 
     void
-    fit(Eigen::MatrixXd& X, Eigen::VectorXd& y);
+    fit(const Eigen::VectorXd& X, Eigen::VectorXd& y);
 
-    void
-    predict(Eigen::MatrixXd& X);
+    Eigen::VectorXd 
+    predict(const Eigen::VectorXd& X);
 
 private:
     Eigen::VectorXd w;  // Вектор весов (включая bias)
@@ -26,7 +26,7 @@ private:
 
 
 void
-LinearRegression::fit(Eigen::MatrixXd& X, Eigen::VectorXd& y)
+LinearRegression::fit(const Eigen::VectorXd& X, Eigen::VectorXd& y)
 {
     int l = X.rows();  // число образцов (строк)
 
@@ -34,12 +34,15 @@ LinearRegression::fit(Eigen::MatrixXd& X, Eigen::VectorXd& y)
     Eigen::MatrixXd X_train (l, X.cols() + 1);
     X_train << X , ones_column;
 
+    std::cout << "YES" <<std::endl;
 
-     w = (X_train.transpose() * X_train).ldlt().solve(X_train.transpose() * y);
+    w = (X_train.transpose() * X_train).inverse() * (X_train.transpose() * y);
+
+    std::cout << "w\n" << w <<std::endl;
 }
 
-void
-LinearRegression::predict(Eigen::MatrixXd& X)
+Eigen::VectorXd 
+LinearRegression::predict(const Eigen::VectorXd& X)
 {
     int l = X.rows();  // число образцов (строк)
 
@@ -47,8 +50,9 @@ LinearRegression::predict(Eigen::MatrixXd& X)
     Eigen::MatrixXd X_train (l, X.cols() + 1);
     X_train << X , ones_column;
 
- //         y_pred = X_train @ self.w 
- //доделать
+    Eigen::VectorXd y_pred = X_train * w;
+
+    return y_pred;
 }
 
 
@@ -144,7 +148,8 @@ trainTestSplit(const Eigen::VectorXd& X, const Eigen::VectorXd& Y, double train_
 
 void myPlot(const Eigen::VectorXd& X_train,const Eigen::VectorXd& Y_train, 
             const Eigen::VectorXd& X_test,const Eigen::VectorXd& Y_test,
-            const Eigen::VectorXd& X_real)
+            const Eigen::VectorXd& X_real,
+            const Eigen::VectorXd& y_pred)
 {
     sciplot::Plot2D plot;
 
@@ -184,6 +189,13 @@ void myPlot(const Eigen::VectorXd& X_train,const Eigen::VectorXd& Y_train,
     plot.drawCurve(X_real, Y1).lineWidth(3)
                                    .label("real")
                                    .lineColor("red");
+
+
+
+    plot.drawCurve(X_real, y_pred).lineWidth(3)
+                                   .label("predicted")
+                                   .lineColor("black");
+
 
 
     sciplot::Figure fig = {{plot}};
